@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <windows.h>
+//#include <windows.h>
 #include <math.h>
 
 #define INPUT_SIZE 512
 
-// Функция для ввода вещественного числа
 double inputDouble(const char *prompt) {
     char input[INPUT_SIZE];
     char *endptr;
@@ -17,16 +16,14 @@ double inputDouble(const char *prompt) {
         if (fgets(input, sizeof(input), stdin) != NULL) {
             val = strtod(input, &endptr);
 
-            // Пропускаем пробелы после числа
-            while (*endptr != '\0' && isspace((unsigned char)*endptr)) {
+            while (*endptr != '\0' && isspace(*endptr)) {
                 endptr++;
             }
 
             if (*endptr == '\0' || *endptr == '\n') {
-                return val; // корректное число
-            } else {
-                printf("Ошибка: введено не число. Попробуйте ещё раз.\n");
+                return val;
             }
+            printf("Ошибка: введено не число. Попробуйте ещё раз.\n");
         }
     }
 }
@@ -59,7 +56,7 @@ void task2() {
     } else {
         if (x == y) {
             result = pow(x + y, 2);
-        } else {  // x > y
+        } else {
             result = atan(fabs(x) + y);
         }
     }
@@ -96,7 +93,6 @@ void task3() {
     }
 }
 
-// Функция для выбора задачи из меню
 int chooseTask() {
     int choice;
     int ch;
@@ -111,20 +107,20 @@ int chooseTask() {
 
         if (scanf("%d", &choice) != 1) {
             printf("Ошибка: введите цифру от 0 до 3!\n");
-            while ((ch = getchar()) != '\n' && ch != EOF); // очищаем буфер
+            while ((ch = getchar()) != '\n' && ch != EOF);
         } else if (choice >= 0 && choice <= 3) {
-            while ((ch = getchar()) != '\n' && ch != EOF); // очищаем остаток строки после scanf
+            while ((ch = getchar()) != '\n' && ch != EOF);
             return choice;
         } else {
             printf("Ошибка: выберите число от 0 до 3!\n");
-            while ((ch = getchar()) != '\n' && ch != EOF); // очищаем буфер
+            while ((ch = getchar()) != '\n' && ch != EOF);
         }
     }
 }
 
 int main() {
-    SetConsoleCP(65001);
-    SetConsoleOutputCP(65001);
+    //SetConsoleCP(65001);
+    //SetConsoleOutputCP(65001);
 
     int choice;
     do {
