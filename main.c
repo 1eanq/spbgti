@@ -1,10 +1,55 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-//#include <windows.h>
 #include <math.h>
+#include <unistd.h>
+#include <string.h>
+//#include <windows.h>
 
 #define INPUT_SIZE 512
+
+void donut() {
+    float A = 0, B = 0;
+    float i, j;
+    int k;
+    float z[1760];
+    char b[1760];
+    printf("\x1b[2J");
+    for(;;) {
+        memset(b,32,1760);
+        memset(z,0,7040);
+        for(j=0; j < 6.28; j += 0.07) {
+            for(i=0; i < 6.28; i += 0.02) {
+                float c = sin(i);
+                float d = cos(j);
+                float e = sin(A);
+                float f = sin(j);
+                float g = cos(A);
+                float h = d + 2;
+                float D = 1 / (c * h * e + f * g + 5);
+                float l = cos(i);
+                float m = cos(B);
+                float n = sin(B);
+                float t = c * h * g - f * e;
+                int x = 40 + 30 * D * (l * h * m - t * n);
+                int y= 12 + 15 * D * (l * h * n + t * m);
+                int o = x + 80 * y;
+                int N = 8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n);
+                if(22 > y && y > 0 && x > 0 && 80 > x && D > z[o]) {
+                    z[o] = D;
+                    b[o] = ".,-~:;=!*#$@"[N > 0 ? N : 0];
+                }
+            }
+        }
+        printf("\x1b[H");
+        for(k = 0; k < 1761; k++) {
+            putchar(k % 80 ? b[k] : 10);
+            A += 0.00004;
+            B += 0.00002;
+        }
+        usleep(30000);
+    }
+}
 
 double inputDouble(const char *prompt) {
     char input[INPUT_SIZE];
@@ -108,7 +153,7 @@ int chooseTask() {
         if (scanf("%d", &choice) != 1) {
             printf("Ошибка: введите цифру от 0 до 3!\n");
             while ((ch = getchar()) != '\n' && ch != EOF);
-        } else if (choice >= 0 && choice <= 3) {
+        } else if (choice >= 0 && choice <= 4) {
             while ((ch = getchar()) != '\n' && ch != EOF);
             return choice;
         } else {
@@ -130,6 +175,7 @@ int main() {
             case 1: task1(); break;
             case 2: task2(); break;
             case 3: task3(); break;
+            case 4: donut(); break;
             case 0: printf("Выход из программы.\n"); break;
         }
 
