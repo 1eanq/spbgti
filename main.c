@@ -78,7 +78,7 @@ void task1() {
     double y = inputDouble("Введите y: ");
 
     if (y > 1 || y < -1) {
-        printf("y должен быть в пределах [-1 < y < 1].");
+        printf("y должен быть в пределах [-1; 1].");
         return;
     }
 
