@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-//#include <windows.h>
 #include <math.h>
+#include <locale.h>
+#include <windows.h>
 
 #define INPUT_SIZE 512
 
@@ -16,15 +17,24 @@ double inputDouble(const char *prompt) {
         if (fgets(input, sizeof(input), stdin) != NULL) {
             val = strtod(input, &endptr);
 
-            while (*endptr != '\0' && isspace(*endptr)) {
+            while (*endptr != '\0' && isspace((unsigned char)*endptr)) {
                 endptr++;
             }
 
             if (*endptr == '\0' || *endptr == '\n') {
                 return val;
+            } else {
+                printf("Ошибка: введено не число. Попробуйте ещё раз.\n");
             }
-            printf("Ошибка: введено не число. Попробуйте ещё раз.\n");
         }
+    }
+}
+
+double normalize(double n) {
+    if (n == 0) {
+        return 0;
+    } else {
+        return n;
     }
 }
 
@@ -42,7 +52,7 @@ void task1() {
 
     double result = dividend/divisor + asin(y);
 
-    printf("Результат: %lf\n", result);
+    printf("Результат: %lf\n", normalize(result));
 }
 
 void task2() {
@@ -56,13 +66,13 @@ void task2() {
     } else {
         if (x == y) {
             result = pow(x + y, 2);
-        } else {
+        } else {  // x > y
             result = atan(fabs(x) + y);
         }
     }
 
 
-    printf("Результат: %lf\n", result);}
+    printf("Результат: %lf\n", normalize(result));}
 
 void task3() {
     double a = inputDouble("Введите левую границу: ");
@@ -88,7 +98,7 @@ void task3() {
         } else {
             y = -1 * pow(x, 2);
         }
-        printf("(%lf,%lf)\n", x, y);
+        printf("(%lf,%lf)\n", normalize(normalize(y)), y);
         x += h;
     }
 }
@@ -119,8 +129,9 @@ int chooseTask() {
 }
 
 int main() {
-    //SetConsoleCP(65001);
-    //SetConsoleOutputCP(65001);
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
+    setlocale(LC_ALL, "RU");
 
     int choice;
     do {
