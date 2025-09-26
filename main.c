@@ -1,3 +1,9 @@
+/**************************************************
+* Название: main.c                                *
+* Задание: Контрольная работа №1                  *
+* Автор: И. Д. Горинов, СПбГТИ (ТУ), 2025         *
+**************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -66,7 +72,7 @@ void task2() {
     } else {
         if (x == y) {
             result = pow(x + y, 2);
-        } else {  // x > y
+        } else {
             result = atan(fabs(x) + y);
         }
     }
@@ -74,7 +80,7 @@ void task2() {
 
     printf("Результат: %lf\n", normalize(result));}
 
-void task3() {
+void task3(void) {
     double a = inputDouble("Введите левую границу: ");
     double b = inputDouble("Введите правую границу: ");
     double h = inputDouble("Введите h: ");
@@ -98,7 +104,7 @@ void task3() {
         } else {
             y = -1 * pow(x, 2);
         }
-        printf("(%lf,%lf)\n", normalize(normalize(y)), y);
+        printf("(%lf,%lf)\n", normalize(x), normalize(y));
         x += h;
     }
 }
@@ -128,10 +134,10 @@ int chooseTask() {
     }
 }
 
-int main() {
+int main(void) {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
-    setlocale(LC_ALL, "RU");
+    setlocale(LC_CTYPE, "RU");
 
     int choice;
     do {
@@ -146,5 +152,5 @@ int main() {
 
     } while (choice != 0);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
