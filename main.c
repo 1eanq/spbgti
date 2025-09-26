@@ -1,9 +1,3 @@
-/**************************************************
-* Название: main.c                                *
-* Задание: Контрольная работа №1 вар.7            *
-* Автор: И. Д. Горинов, СПбГТИ (ТУ), 2025         *
-**************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -13,6 +7,10 @@
 #include <stdbool.h>
 
 #define INPUT_SIZE 512
+#define FIRST_TASK 1
+#define SECOND_TASK 2
+#define THIRD_TASK 3
+#define EXIT 0
 
 double inputDouble(const char *prompt) {
     char input[INPUT_SIZE];
@@ -124,10 +122,10 @@ int chooseTask() {
         printf("0. Выход\n");
         printf("Введите номер задачи: ");
 
-        if (scanf("%d", &choice) != 1) {
+        if (scanf("%d", &choice) != true) {
             printf("Ошибка: введите цифру от 0 до 3!\n");
             while ((ch = getchar()) != '\n' && ch != EOF);
-        } else if (choice >= 0 && choice <= 3) {
+        } else if (choice >= FIRST_TASK && choice <= THIRD_TASK) {
             while ((ch = getchar()) != '\n' && ch != EOF);
             return choice;
         } else {
@@ -149,10 +147,10 @@ int main(void) {
         choice = chooseTask();
 
         switch (choice) {
-            case 1: task1(); break;
-            case 2: task2(); break;
-            case 3: task3(); break;
-            case 0: printf("Выход из программы.\n"); break;
+            case FIRST_TASK: task1(); break;
+            case SECOND_TASK: task2(); break;
+            case THIRD_TASK: task3(); break;
+            case EXIT: printf("Выход из программы.\n"); break;
         }
 
     } while (choice != 0);
