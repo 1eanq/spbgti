@@ -37,11 +37,10 @@ double inputDouble(const char *prompt) {
 }
 
 double normalize(double n) {
-    if (n == 0) {
-        return 0;
-    } else {
-        return n;
+    if (fabs(n) < 1e-6 ) {
+        return copysign(n, 1.0);
     }
+    return n;
 }
 
 void task1() {
@@ -104,7 +103,10 @@ void task3(void) {
         } else {
             y = -1 * pow(x, 2);
         }
-        printf("(%lf,%lf)\n", normalize(x), normalize(y));
+        if (x==0) {
+            x = 0.0;
+        }
+        printf("%lf, %lf\n", normalize(x), normalize(y));
         x += h;
     }
 }
