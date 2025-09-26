@@ -4,4 +4,5 @@ project(spbgti C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(spbgti main.c
-        main.c)
+        main.c
+)

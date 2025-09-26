@@ -153,7 +153,7 @@ int main(void) {
             case EXIT: printf("Выход из программы.\n"); break;
         }
 
-    } while (choice != 0);
+    } while (choice != EXIT);
 
     return EXIT_SUCCESS;
 }
