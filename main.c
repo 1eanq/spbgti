@@ -1,6 +1,6 @@
 /**************************************************
 * Название: main.c                                *
-* Задание: Контрольная работа №1                  *
+* Задание: Контрольная работа №1 вар.7            *
 * Автор: И. Д. Горинов, СПбГТИ (ТУ), 2025         *
 **************************************************/
 
@@ -10,6 +10,7 @@
 #include <math.h>
 #include <locale.h>
 #include <windows.h>
+#include <stdbool.h>
 
 #define INPUT_SIZE 512
 
@@ -115,7 +116,7 @@ int chooseTask() {
     int choice;
     int ch;
 
-    while (1) {
+    while (true) {
         printf("\n=== Меню ===\n");
         printf("1. Задача 1\n");
         printf("2. Задача 2\n");
@@ -140,6 +141,8 @@ int main(void) {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
     setlocale(LC_CTYPE, "RU");
+
+    printf("Название: main.c\nЗадание: Контрольная работа №1 вар. 7\nАвтор: И. Д. Горинов, СПбГТИ (ТУ), 2025");
 
     int choice;
     do {
