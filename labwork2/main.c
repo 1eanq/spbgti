@@ -28,7 +28,7 @@ double* inputDoubleArray(int* outCount) {
     char line[INPUT_SIZE];
 
     while (1) {
-        printf("Введите числа через пробел: ");
+        printf("Введите действительные числа через пробел: ");
         if (fgets(line, sizeof(line), stdin) == NULL) {
             *outCount = 0;
             return NULL;
@@ -64,7 +64,7 @@ double* inputDoubleArray(int* outCount) {
             while (*endptr != '\0' && isspace((unsigned char)*endptr)) endptr++;
 
             if (*endptr != '\0') {
-                printf("Ошибка: '%s' не число.\n", token);
+                printf("Ошибка: '%s' не действительное число.\n", token);
                 error = 1;
                 break;
             }
