@@ -95,36 +95,6 @@ double* inputDoubleArray(int* outCount) {
     return arr;
 }
 
-double* parseNumbers(const char* input, int* outCount) {
-    int count = 0;
-    char* str = strdup(input);
-    char* token = strtok(str, " ");
-
-    while (token != NULL) {
-        count++;
-        token = strtok(NULL, " ");
-    }
-
-    int* arr = malloc(count * sizeof(int));
-    if (!arr) {
-        free(str);
-        *outCount = 0;
-        return NULL;
-    }
-
-    strcpy(str, input);
-    token = strtok(str, " ");
-    int i = 0;
-    while (token != NULL) {
-        arr[i++] = atoi(token);
-        token = strtok(NULL, " ");
-    }
-
-    *outCount = count;
-    free(str);
-    return arr;
-}
-
 int inputNatural(const char *prompt) {
     char input[INPUT_SIZE];
     char *endptr;
@@ -235,8 +205,65 @@ void task2(void) {
 void task3(void) {
     int N = 4;
     int M = 5;
+    double G[N][M];
+    double a[N];
+    memset(a, 0, sizeof(a));
 
-    int* G[N][M];
+    printf("Введите матрицу G (%dx%d), по одной строке, числа через пробел:\n", N, M);
+
+    for (int i = 0; i < N; i++) {
+        int count;
+        double* row;
+        while (1) {
+            printf("Строка %d: ", i + 1);
+            row = inputDoubleArray(&count);
+            if (row != NULL && count == M) break;
+            printf("Ошибка: нужно ввести ровно %d чисел. Попробуйте снова.\n", M);
+            free(row);
+        }
+        for (int j = 0; j < M; j++) {
+            G[i][j] = row[j];
+        }
+        free(row);
+    }
+
+    printf("\nИсходная матрица G:\n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            printf("%8.2f ", G[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Обработка матрицы
+    for (int i = 0; i < N; i++) {
+        double prod = 1;
+        int count = 0;
+        for (int j = 0; j < M; j++) {
+            if (fabs(G[i][j]) < 1e-6) { // проверка нуля
+                G[i][j] = (double)count; // заменяем первый ноль на количество элементов
+                break;
+            } else {
+                prod *= G[i][j];
+                count++;
+            }
+        }
+        a[i] = (count > 0) ? prod : 0;
+    }
+
+    printf("\nПреобразованная матрица G:\n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            printf("%8.2f ", G[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\nВектор a (произведения до первого нуля):\n");
+    for (int i = 0; i < N; i++) {
+        printf("%8.2f ", a[i]);
+    }
+    printf("\n");
 }
 
 int main(void) {
@@ -247,6 +274,7 @@ int main(void) {
         showMenu();
         int input;
         scanf("%d", &input);
+        while (getchar() != '\n');
 
         choice = (MenuOption)input;
 
