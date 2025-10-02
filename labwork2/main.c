@@ -145,19 +145,23 @@ int* inputNaturalArray(int* outCount) {
 
 
 void task1(void) {
-    double u[101];
     double p = 1.0;
 
-    u[1] = 0.4;
-    u[2] = 0.5;
-    u[3] = 0.93;
+    double u1 = 0.4;
+    double u2 = 0.5;
+    double u3 = 0.93;
+
+    p *= u1;
+    p *= u2;
+    p *= u3;
 
     for (int i = 4; i <= 100; i++) {
-        u[i] = sin(u[i - 1] + cos(u[i-3]));
-    }
+        double u = sin(u3 + cos(u1));
+        p *= u;
 
-    for (int i = 1; i <= 100; i++) {
-        p *= u[i];
+        u1 = u2;
+        u2 = u3;
+        u3 = u;
     }
 
     printf("p: %f\n", p);
@@ -249,6 +253,8 @@ int main(void) {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
     setlocale(LC_CTYPE, "RU");
+
+    printf("Название: main.c\nЗадание: Контрольная работа №2 вар. 7\nАвтор: И. Д. Горинов, СПбГТИ (ТУ), 2025");
 
     MenuOption choice;
     int running = 1;
