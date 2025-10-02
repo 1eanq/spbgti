@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
+#include <windows.h>
 
 #define INPUT_SIZE 256
 
@@ -22,147 +24,125 @@ void showMenu() {
     printf("Выберите опцию: ");
 }
 
-double normalize(double n) {
-    if (fabs(n) < 1e-6 ) {
-        return copysign(n, 1.0);
-    }
-    return n;
-}
-
-double inputDouble(const char *prompt) {
-    char input[INPUT_SIZE];
-    char *endptr;
-    double val;
-
-    while (1) {
-        printf("%s", prompt);
-        if (fgets(input, sizeof(input), stdin) != NULL) {
-            val = strtod(input, &endptr);
-
-            while (*endptr != '\0' && isspace((unsigned char)*endptr)) {
-                endptr++;
-            }
-
-            if (*endptr == '\0' || *endptr == '\n') {
-                return val;
-            } else {
-                printf("Ошибка: введено не число. Попробуйте ещё раз.\n");
-            }
-        }
-    }
-}
-
 double* inputDoubleArray(int* outCount) {
     char line[INPUT_SIZE];
-    printf("Введите числа через пробел: ");
-    if (fgets(line, sizeof(line), stdin) == NULL) {
-        *outCount = 0;
-        return NULL;
-    }
-
-    line[strcspn(line, "\n")] = '\0';
-
-    int count = 0;
-    char* temp = strdup(line);
-    char* token = strtok(temp, " ");
-    while (token) {
-        count++;
-        token = strtok(NULL, " ");
-    }
-    free(temp);
-
-    double* arr = malloc(count * sizeof(double));
-    if (!arr) {
-        *outCount = 0;
-        return NULL;
-    }
-
-    token = strtok(line, " ");
-    for (int i = 0; i < count; i++) {
-        char* endptr;
-        double val = strtod(token, &endptr);
-
-        while (*endptr != '\0' && isspace((unsigned char)*endptr)) endptr++;
-        if (*endptr != '\0') {
-            val = inputDouble("Некорректное число. Введите число заново: ");
-        }
-
-        arr[i] = val;
-        token = strtok(NULL, " ");
-    }
-
-    *outCount = count;
-    return arr;
-}
-
-int inputNatural(const char *prompt) {
-    char input[INPUT_SIZE];
-    char *endptr;
-    long val;
 
     while (1) {
-        printf("%s", prompt);
-        if (fgets(input, sizeof(input), stdin) != NULL) {
-            val = strtol(input, &endptr, 10);
+        printf("Введите числа через пробел: ");
+        if (fgets(line, sizeof(line), stdin) == NULL) {
+            *outCount = 0;
+            return NULL;
+        }
 
+        line[strcspn(line, "\n")] = '\0';
+
+        int count = 0;
+        char* temp = strdup(line);
+        char* token = strtok(temp, " ");
+        while (token) {
+            count++;
+            token = strtok(NULL, " ");
+        }
+        free(temp);
+
+        if (count == 0) {
+            printf("Ошибка: нет введённых чисел. Попробуйте снова.\n");
+            continue;
+        }
+
+        double* arr = malloc(count * sizeof(double));
+        if (!arr) {
+            *outCount = 0;
+            return NULL;
+        }
+
+        token = strtok(line, " ");
+        int i = 0, error = 0;
+        while (token) {
+            char* endptr;
+            double val = strtod(token, &endptr);
             while (*endptr != '\0' && isspace((unsigned char)*endptr)) endptr++;
 
-            if (*endptr == '\0' || *endptr == '\n') {
-                if (val > 0) {
-                    return (int)val;
-                } else {
-                    printf("Ошибка: введено не натуральное число (>0).\n");
-                }
-            } else {
-                printf("Ошибка: введено не число. Попробуйте ещё раз.\n");
+            if (*endptr != '\0') {
+                printf("Ошибка: '%s' не число.\n", token);
+                error = 1;
+                break;
             }
+
+            arr[i++] = val;
+            token = strtok(NULL, " ");
         }
+
+        if (!error) {
+            *outCount = count;
+            return arr;
+        }
+
+        free(arr);
+        printf("Попробуйте снова.\n");
     }
 }
 
 int* inputNaturalArray(int* outCount) {
     char line[INPUT_SIZE];
-    printf("Введите натуральные числа через пробел: ");
-    if (fgets(line, sizeof(line), stdin) == NULL) {
-        *outCount = 0;
-        return NULL;
-    }
 
-    line[strcspn(line, "\n")] = '\0';
-
-    int count = 0;
-    char* temp = strdup(line);
-    char* token = strtok(temp, " ");
-    while (token) {
-        count++;
-        token = strtok(NULL, " ");
-    }
-    free(temp);
-
-    int* arr = malloc(count * sizeof(int));
-    if (!arr) {
-        *outCount = 0;
-        return NULL;
-    }
-
-    token = strtok(line, " ");
-    for (int i = 0; i < count; i++) {
-        char* endptr;
-        long val = strtol(token, &endptr, 10);
-
-        while (*endptr != '\0' && isspace((unsigned char)*endptr)) endptr++;
-
-        if (*endptr != '\0' || val <= 0) {
-            val = inputNatural("Некорректное число. Введите натуральное число заново: ");
+    while (1) {
+        printf("Введите натуральные числа через пробел: ");
+        if (fgets(line, sizeof(line), stdin) == NULL) {
+            *outCount = 0;
+            return NULL;
         }
 
-        arr[i] = (int)val;
-        token = strtok(NULL, " ");
-    }
+        line[strcspn(line, "\n")] = '\0';
 
-    *outCount = count;
-    return arr;
+        int count = 0;
+        char* temp = strdup(line);
+        char* token = strtok(temp, " ");
+        while (token) {
+            count++;
+            token = strtok(NULL, " ");
+        }
+        free(temp);
+
+        if (count == 0) {
+            printf("Ошибка: нет введённых чисел. Попробуйте снова.\n");
+            continue;
+        }
+
+        int* arr = malloc(count * sizeof(int));
+        if (!arr) {
+            *outCount = 0;
+            return NULL;
+        }
+
+        token = strtok(line, " ");
+        int i = 0, error = 0;
+        while (token) {
+            char* endptr;
+            long val = strtol(token, &endptr, 10);
+            while (*endptr != '\0' && isspace((unsigned char)*endptr)) endptr++;
+
+            if (*endptr != '\0' || val <= 0) {
+                printf("Ошибка: '%s' не натуральное число.\n", token);
+                error = 1;
+                break;
+            }
+
+            arr[i++] = (int)val;
+            token = strtok(NULL, " ");
+        }
+
+        if (!error) {
+            *outCount = count;
+            return arr;
+        }
+
+        free(arr);
+        printf("Попробуйте снова.\n");
+    }
 }
+
+
 
 void task1(void) {
     double u[101];
@@ -199,7 +179,7 @@ void task2(void) {
     }
 
     double omega = dividend / divisor;
-    printf("omega: %f\n", omega);
+    printf("Результат: %f\n", omega);
 }
 
 void task3(void) {
@@ -235,13 +215,12 @@ void task3(void) {
         printf("\n");
     }
 
-    // Обработка матрицы
     for (int i = 0; i < N; i++) {
         double prod = 1;
         int count = 0;
         for (int j = 0; j < M; j++) {
-            if (fabs(G[i][j]) < 1e-6) { // проверка нуля
-                G[i][j] = (double)count; // заменяем первый ноль на количество элементов
+            if (fabs(G[i][j]) < 1e-6) {
+                G[i][j] = (double)count;
                 break;
             } else {
                 prod *= G[i][j];
@@ -259,7 +238,7 @@ void task3(void) {
         printf("\n");
     }
 
-    printf("\nВектор a (произведения до первого нуля):\n");
+    printf("\nВектор a:\n");
     for (int i = 0; i < N; i++) {
         printf("%8.2f ", a[i]);
     }
@@ -267,6 +246,10 @@ void task3(void) {
 }
 
 int main(void) {
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
+    setlocale(LC_CTYPE, "RU");
+
     MenuOption choice;
     int running = 1;
 
