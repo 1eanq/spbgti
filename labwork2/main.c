@@ -156,7 +156,7 @@ void task1(void) {
     p *= u3;
 
     for (int i = 4; i <= 100; i++) {
-        double u = sin(u3 + cos(u1));
+        double u = sin(u3) + cos(u1);
         p *= u;
 
         u1 = u2;
