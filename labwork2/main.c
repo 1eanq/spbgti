@@ -4,9 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <locale.h>
-//#include <windows.h>
-
-#define INPUT_SIZE 256
+#include <stdbool.h>
 
 typedef enum {
     MENU_EXIT = 0,
@@ -15,6 +13,11 @@ typedef enum {
     MENU_THIRD_TASK = 3,
     MENU_TEST = 4
 } MenuOption;
+
+typedef enum {
+    INPUT_DOUBLE,
+    INPUT_NATURAL
+} InputType;
 
 void showMenu() {
     printf("\n=== Главное меню ===\n");
@@ -26,17 +29,41 @@ void showMenu() {
     printf("Выберите опцию: ");
 }
 
-double* inputDoubleArray(int* outCount) {
-    char line[INPUT_SIZE];
+char* inputLine(void) {
+    size_t size = 128;
+    size_t len = 0;
+    char* buffer = malloc(size);
+    if (!buffer) return NULL;
 
+    int c;
+    while ((c = getchar()) != EOF && c != '\n') {
+        buffer[len++] = (char)c;
+        if (len >= size - 1) {
+            size *= 2;
+            char* newbuf = realloc(buffer, size);
+            if (!newbuf) {
+                free(buffer);
+                return NULL;
+            }
+            buffer = newbuf;
+        }
+    }
+    buffer[len] = '\0';
+    return buffer;
+}
+
+void* inputArray(InputType type, int* outCount) {
     while (1) {
-        printf("Введите действительные числа через пробел: ");
-        if (fgets(line, sizeof(line), stdin) == NULL) {
+        if (type == INPUT_DOUBLE)
+            printf("Введите действительные числа через пробел: ");
+        else
+            printf("Введите натуральные числа через пробел: ");
+
+        char* line = inputLine();
+        if (!line) {
             *outCount = 0;
             return NULL;
         }
-
-        line[strcspn(line, "\n")] = '\0';
 
         int count = 0;
         char* temp = strdup(line);
@@ -49,31 +76,50 @@ double* inputDoubleArray(int* outCount) {
 
         if (count == 0) {
             printf("Ошибка: нет введённых чисел. Попробуйте снова.\n");
+            free(line);
             continue;
         }
 
-        double* arr = malloc(count * sizeof(double));
+        void* arr = NULL;
+        if (type == INPUT_DOUBLE)
+            arr = malloc(count * sizeof(double));
+        else
+            arr = malloc(count * sizeof(int));
+
         if (!arr) {
+            free(line);
             *outCount = 0;
             return NULL;
         }
 
         token = strtok(line, " ");
         int i = 0, error = 0;
+
         while (token) {
             char* endptr;
-            double val = strtod(token, &endptr);
-            while (*endptr != '\0' && isspace((unsigned char)*endptr)) endptr++;
-
-            if (*endptr != '\0') {
-                printf("Ошибка: '%s' не действительное число.\n", token);
-                error = 1;
-                break;
+            if (type == INPUT_DOUBLE) {
+                double val = strtod(token, &endptr);
+                while (*endptr && isspace((unsigned char)*endptr)) endptr++;
+                if (*endptr != '\0') {
+                    printf("Ошибка: '%s' не действительное число.\n", token);
+                    error = 1;
+                    break;
+                }
+                ((double*)arr)[i++] = val;
+            } else {
+                long val = strtol(token, &endptr, 10);
+                while (*endptr && isspace((unsigned char)*endptr)) endptr++;
+                if (*endptr != '\0' || val <= 0) {
+                    printf("Ошибка: '%s' не натуральное число.\n", token);
+                    error = 1;
+                    break;
+                }
+                ((int*)arr)[i++] = (int)val;
             }
-
-            arr[i++] = val;
             token = strtok(NULL, " ");
         }
+
+        free(line);
 
         if (!error) {
             *outCount = count;
@@ -84,67 +130,6 @@ double* inputDoubleArray(int* outCount) {
         printf("Попробуйте снова.\n");
     }
 }
-
-int* inputNaturalArray(int* outCount) {
-    char line[INPUT_SIZE];
-
-    while (1) {
-        printf("Введите натуральные числа через пробел: ");
-        if (fgets(line, sizeof(line), stdin) == NULL) {
-            *outCount = 0;
-            return NULL;
-        }
-
-        line[strcspn(line, "\n")] = '\0';
-
-        int count = 0;
-        char* temp = strdup(line);
-        char* token = strtok(temp, " ");
-        while (token) {
-            count++;
-            token = strtok(NULL, " ");
-        }
-        free(temp);
-
-        if (count == 0) {
-            printf("Ошибка: нет введённых чисел. Попробуйте снова.\n");
-            continue;
-        }
-
-        int* arr = malloc(count * sizeof(int));
-        if (!arr) {
-            *outCount = 0;
-            return NULL;
-        }
-
-        token = strtok(line, " ");
-        int i = 0, error = 0;
-        while (token) {
-            char* endptr;
-            long val = strtol(token, &endptr, 10);
-            while (*endptr != '\0' && isspace((unsigned char)*endptr)) endptr++;
-
-            if (*endptr != '\0' || val <= 0) {
-                printf("Ошибка: '%s' не натуральное число.\n", token);
-                error = 1;
-                break;
-            }
-
-            arr[i++] = (int)val;
-            token = strtok(NULL, " ");
-        }
-
-        if (!error) {
-            *outCount = count;
-            return arr;
-        }
-
-        free(arr);
-        printf("Попробуйте снова.\n");
-    }
-}
-
-
 
 void task1(void) {
     double p = 1.0;
@@ -170,32 +155,54 @@ void task1(void) {
 }
 
 void task2(int autogen) {
-    int len;
-    int* n;
-    double* d;
+    int lenN, lenD;
+    int* n = NULL;
+    double* d = NULL;
 
     if (!autogen) {
-        n = inputNaturalArray(&len);
-        d = inputDoubleArray(&len);
+        n = (int*)inputArray(INPUT_NATURAL, &lenN);
+        d = (double*)inputArray(INPUT_DOUBLE, &lenD);
+
+        if (!n || !d) {
+            printf("Ошибка: не удалось получить входные данные.\n");
+            free(n);
+            free(d);
+            return;
+        }
+
+        if (lenN != lenD) {
+            printf("Ошибка: количество элементов n (%d) и d (%d) должно совпадать.\n", lenN, lenD);
+            free(n);
+            free(d);
+            return;
+        }
     } else {
-        len = 5 + rand() % 5;
-        n = malloc(len * sizeof(int));
-        d = malloc(len * sizeof(double));
+        lenN = lenD = 5 + rand() % 5;
+        n = malloc(lenN * sizeof(int));
+        d = malloc(lenD * sizeof(double));
+
+        if (!n || !d) {
+            printf("Ошибка выделения памяти.\n");
+            free(n);
+            free(d);
+            return;
+        }
 
         printf("Автогенерация для task2:\n");
         printf("n: ");
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < lenN; i++) {
             n[i] = 1 + rand() % 10;
             printf("%d ", n[i]);
         }
         printf("\nd: ");
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < lenD; i++) {
             d[i] = (rand() % 200 - 100) / 10.0;
             printf("%.2f ", d[i]);
         }
         printf("\n");
     }
 
+    int len = lenN;
     double dividend = 0.0;
     int divisor = 0;
     for (int i = 0; i < len; i++) {
@@ -203,7 +210,11 @@ void task2(int autogen) {
         divisor += n[i];
     }
 
-    printf("Результат: %f\n", dividend / divisor);
+    if (divisor == 0) {
+        printf("Ошибка: сумма элементов n равна нулю, деление невозможно.\n");
+    } else {
+        printf("Результат: %f\n", dividend / divisor);
+    }
 
     free(n);
     free(d);
@@ -223,7 +234,7 @@ void task3(int autogen) {
             double* row;
             while (1) {
                 printf("Строка %d: ", i + 1);
-                row = inputDoubleArray(&count);
+                row = (double*)inputArray(INPUT_DOUBLE, &count);
                 if (row != NULL && count == M) break;
                 printf("Ошибка: нужно ввести ровно %d чисел. Попробуйте снова.\n", M);
                 free(row);
@@ -280,19 +291,21 @@ void test(void) {
 }
 
 int main(void) {
-    //SetConsoleCP(65001);
-    //SetConsoleOutputCP(65001);
     setlocale(LC_CTYPE, "RU");
 
-    printf("Название: main.c\nЗадание: Контрольная работа №2 вар. 7\nАвтор: И. Д. Горинов, СПбГТИ (ТУ), 2025");
+    printf("Название: main.c\nЗадание: Контрольная работа №2 вар. 7\nАвтор: И. Д. Горинов, СПбГТИ (ТУ), 2025\n");
 
     MenuOption choice;
-    int running = 1;
+    int running = true;
 
     while (running) {
         showMenu();
         int input;
-        scanf("%d", &input);
+        if (scanf("%d", &input) != 1) {
+            while (getchar() != '\n');
+            printf("Ошибка ввода! Попробуйте снова.\n");
+            continue;
+        }
         while (getchar() != '\n');
 
         choice = (MenuOption)input;
@@ -302,7 +315,7 @@ int main(void) {
             case MENU_SECOND_TASK: task2(0); break;
             case MENU_THIRD_TASK: task3(0); break;
             case MENU_TEST: test(); break;
-            case MENU_EXIT: running = 0; break;
+            case MENU_EXIT: running = false; break;
             default:
                 printf("Неверный выбор! Попробуйте снова.\n");
         }
