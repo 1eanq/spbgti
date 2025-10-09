@@ -38,6 +38,7 @@ char* inputLine(void) {
     int c;
     while ((c = getchar()) != EOF && c != '\n') {
         buffer[len++] = (char)c;
+
         if (len >= size - 1) {
             size *= 2;
             char* newbuf = realloc(buffer, size);
@@ -48,6 +49,12 @@ char* inputLine(void) {
             buffer = newbuf;
         }
     }
+
+    if (c == EOF && len == 0) {  // пустой ввод
+        free(buffer);
+        return NULL;
+    }
+
     buffer[len] = '\0';
     return buffer;
 }
