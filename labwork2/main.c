@@ -6,6 +6,10 @@
 #include <locale.h>
 #include <stdbool.h>
 
+
+#define N 4
+#define M 5
+
 typedef enum {
     MENU_EXIT = 0,
     MENU_FIRST_TASK = 1,
@@ -44,6 +48,7 @@ char* inputLine(void) {
             char* newbuf = realloc(buffer, size);
             if (!newbuf) {
                 free(buffer);
+                buffer = NULL;
                 return NULL;
             }
             buffer = newbuf;
@@ -52,6 +57,7 @@ char* inputLine(void) {
 
     if (c == EOF && len == 0) {  // пустой ввод
         free(buffer);
+        buffer = NULL;
         return NULL;
     }
 
@@ -80,10 +86,12 @@ void* inputArray(InputType type, int* outCount) {
             token = strtok(NULL, " ");
         }
         free(temp);
+        temp = NULL;
 
         if (count == 0) {
             printf("Ошибка: нет введённых чисел. Попробуйте снова.\n");
             free(line);
+            line = NULL;
             continue;
         }
 
@@ -95,13 +103,13 @@ void* inputArray(InputType type, int* outCount) {
 
         if (!arr) {
             free(line);
+            line = NULL;
             *outCount = 0;
             return NULL;
         }
 
         token = strtok(line, " ");
-        int i = 0, error = 0;
-
+        int i = 0, error = false;
         while (token) {
             char* endptr;
             if (type == INPUT_DOUBLE) {
@@ -109,7 +117,7 @@ void* inputArray(InputType type, int* outCount) {
                 while (*endptr && isspace((unsigned char)*endptr)) endptr++;
                 if (*endptr != '\0') {
                     printf("Ошибка: '%s' не действительное число.\n", token);
-                    error = 1;
+                    error = true;
                     break;
                 }
                 ((double*)arr)[i++] = val;
@@ -118,7 +126,7 @@ void* inputArray(InputType type, int* outCount) {
                 while (*endptr && isspace((unsigned char)*endptr)) endptr++;
                 if (*endptr != '\0' || val <= 0) {
                     printf("Ошибка: '%s' не натуральное число.\n", token);
-                    error = 1;
+                    error = true;
                     break;
                 }
                 ((int*)arr)[i++] = (int)val;
@@ -127,6 +135,7 @@ void* inputArray(InputType type, int* outCount) {
         }
 
         free(line);
+        line = NULL;
 
         if (!error) {
             *outCount = count;
@@ -134,6 +143,8 @@ void* inputArray(InputType type, int* outCount) {
         }
 
         free(arr);
+        arr = NULL;
+        arr = NULL;
         printf("Попробуйте снова.\n");
     }
 }
@@ -173,14 +184,18 @@ void task2(int autogen) {
         if (!n || !d) {
             printf("Ошибка: не удалось получить входные данные.\n");
             free(n);
+            n = NULL;
             free(d);
+            d = NULL;
             return;
         }
 
         if (lenN != lenD) {
             printf("Ошибка: количество элементов n (%d) и d (%d) должно совпадать.\n", lenN, lenD);
             free(n);
+            n = NULL;
             free(d);
+            d = NULL;
             return;
         }
     } else {
@@ -191,7 +206,9 @@ void task2(int autogen) {
         if (!n || !d) {
             printf("Ошибка выделения памяти.\n");
             free(n);
+            n = NULL;
             free(d);
+            d = NULL;
             return;
         }
 
@@ -224,12 +241,12 @@ void task2(int autogen) {
     }
 
     free(n);
+    n = NULL;
     free(d);
+    d = NULL;
 }
 
 void task3(int autogen) {
-    int N = 4;
-    int M = 5;
     double G[N][M];
     double a[N];
     memset(a, 0, sizeof(a));
@@ -245,9 +262,11 @@ void task3(int autogen) {
                 if (row != NULL && count == M) break;
                 printf("Ошибка: нужно ввести ровно %d чисел. Попробуйте снова.\n", M);
                 free(row);
+                row = NULL;
             }
             for (int j = 0; j < M; j++) G[i][j] = row[j];
             free(row);
+            row = NULL;
         }
     } else {
         printf("Автогенерация матрицы для task3:\n");
