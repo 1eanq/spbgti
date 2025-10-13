@@ -15,7 +15,9 @@ typedef enum {
     MENU_FIRST_TASK = 1,
     MENU_SECOND_TASK = 2,
     MENU_THIRD_TASK = 3,
-    MENU_TEST = 4
+    MENU_TEST = 4,
+    MENU_TEST_SECOND_TASK = 5,
+    MENU_TEST_THIRD_TASK = 6
 } MenuOption;
 
 typedef enum {
@@ -29,6 +31,8 @@ void showMenu() {
     printf("2. Задача 2\n");
     printf("3. Задача 3\n");
     printf("4. Тест\n");
+    printf("5. Тест 2 задачи\n");
+    printf("6. Тест 3 задачи\n");
     printf("0. Выход\n");
     printf("Выберите опцию: ");
 }
@@ -97,9 +101,9 @@ void* inputArray(InputType type, int* outCount) {
 
         void* arr = NULL;
         if (type == INPUT_DOUBLE)
-            arr = malloc(count * sizeof(double));
+            arr = calloc(count, sizeof(double));
         else
-            arr = malloc(count * sizeof(int));
+            arr = calloc(count, sizeof(int));
 
         if (!arr) {
             free(line);
@@ -200,8 +204,8 @@ void task2(int autogen) {
         }
     } else {
         lenN = lenD = 5 + rand() % 5;
-        n = malloc(lenN * sizeof(int));
-        d = malloc(lenD * sizeof(double));
+        n = calloc(lenN, sizeof(int));
+        d = calloc(lenD, sizeof(double));
 
         if (!n || !d) {
             printf("Ошибка выделения памяти.\n");
@@ -275,12 +279,18 @@ void task3(int autogen) {
                 double val = (rand() % 200 - 100) / 10.0;
                 if (rand() % 8 == 0) val = 0.0;
                 G[i][j] = val;
-                printf("%8.2f ", val);
             }
-            printf("\n");
         }
     }
 
+    // === Вывод начальной матрицы ===
+    printf("\nНачальная матрица G:\n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) printf("%8.2f ", G[i][j]);
+        printf("\n");
+    }
+
+    // === Преобразование матрицы и вычисление вектора a ===
     for (int i = 0; i < N; i++) {
         double prod = 1;
         int count = 0;
@@ -296,10 +306,19 @@ void task3(int autogen) {
         a[i] = (count > 0) ? prod : 0;
     }
 
+    // === Вывод преобразованной матрицы ===
+    printf("\nПреобразованная матрица G:\n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) printf("%8.2f ", G[i][j]);
+        printf("\n");
+    }
+
+    // === Вывод вектора a ===
     printf("\nВектор a:\n");
     for (int i = 0; i < N; i++) printf("%8.2f ", a[i]);
     printf("\n");
 }
+
 
 void test(void) {
     printf("\n=== Автопроверка всех задач ===\n");
@@ -338,9 +357,11 @@ int main(void) {
 
         switch (choice) {
             case MENU_FIRST_TASK: task1(); break;
-            case MENU_SECOND_TASK: task2(0); break;
-            case MENU_THIRD_TASK: task3(0); break;
+            case MENU_SECOND_TASK: task2(false); break;
+            case MENU_THIRD_TASK: task3(false); break;
             case MENU_TEST: test(); break;
+            case MENU_TEST_SECOND_TASK: task2(true); break;
+            case MENU_TEST_THIRD_TASK: task3(true); break;
             case MENU_EXIT: running = false; break;
             default:
                 printf("Неверный выбор! Попробуйте снова.\n");
