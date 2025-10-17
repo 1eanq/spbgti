@@ -311,14 +311,12 @@ void task3(int autogen) {
             a[i] = 0;
     }
 
-    // === Вывод преобразованной матрицы ===
     printf("\nПреобразованная матрица G:\n");
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) printf("%8.2f ", G[i][j]);
         printf("\n");
     }
 
-    // === Вывод вектора a ===
     printf("\nВектор a:\n");
     for (int i = 0; i < N; i++) printf("%8.2f ", a[i]);
     printf("\n");
