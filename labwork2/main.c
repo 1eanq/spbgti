@@ -283,27 +283,32 @@ void task3(int autogen) {
         }
     }
 
-    // === Вывод начальной матрицы ===
     printf("\nНачальная матрица G:\n");
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) printf("%8.2f ", G[i][j]);
         printf("\n");
     }
 
-    // === Преобразование матрицы и вычисление вектора a ===
     for (int i = 0; i < N; i++) {
         double prod = 1;
         int count = 0;
+        int hasZero = 0;
+
         for (int j = 0; j < M; j++) {
             if (fabs(G[i][j]) < 1e-6) {
                 G[i][j] = (double)count;
+                hasZero = true;
                 break;
             } else {
                 prod *= G[i][j];
                 count++;
             }
         }
-        a[i] = (count > 0) ? prod : 0;
+
+        if (hasZero)
+            a[i] = (count > 0) ? prod : 0;
+        else
+            a[i] = 0;
     }
 
     // === Вывод преобразованной матрицы ===
