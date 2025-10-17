@@ -59,7 +59,7 @@ char* inputLine(void) {
         }
     }
 
-    if (c == EOF && len == 0) {  // пустой ввод
+    if (c == EOF && len == 0) {
         free(buffer);
         buffer = NULL;
         return NULL;
@@ -252,6 +252,7 @@ void task2(int autogen) {
 
 void task3(int autogen) {
     double G[N][M];
+    memset(G, 0, sizeof(G));
     double a[N];
     memset(a, 0, sizeof(a));
 
