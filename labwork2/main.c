@@ -203,7 +203,7 @@ void task2(int autogen) {
             return;
         }
     } else {
-        lenN = lenD = 5 + rand() % 5;
+        lenN = lenD = 20;
         n = calloc(lenN, sizeof(int));
         d = calloc(lenD, sizeof(double));
 
