@@ -52,6 +52,7 @@ char* inputLine(void) {
             char* newbuf = realloc(buffer, size);
             if (!newbuf) {
                 free(buffer);
+                buffer = NULL;
                 return NULL;
             }
             buffer = newbuf;
@@ -60,6 +61,7 @@ char* inputLine(void) {
 
     if (c == EOF && len == 0) {
         free(buffer);
+        buffer = NULL;
         return NULL;
     }
 
@@ -84,6 +86,7 @@ void* inputArray(InputType type, int* outCount) {
         char* temp = strdup(line);
         if (!temp) {
             free(line);
+            line = NULL;
             *outCount = 0;
             return NULL;
         }
@@ -93,10 +96,12 @@ void* inputArray(InputType type, int* outCount) {
             token = strtok(NULL, " ");
         }
         free(temp);
+        temp = NULL;
 
         if (count == 0) {
             printf("Ошибка: нет введённых чисел. Попробуйте снова.\n");
             free(line);
+            line = NULL;
             continue;
         }
 
@@ -108,6 +113,7 @@ void* inputArray(InputType type, int* outCount) {
 
         if (!arr) {
             free(line);
+            line = NULL;
             *outCount = 0;
             return NULL;
         }
@@ -140,6 +146,7 @@ void* inputArray(InputType type, int* outCount) {
         }
 
         free(line);
+        line = NULL;
 
         if (!error) {
             *outCount = count;
@@ -147,6 +154,7 @@ void* inputArray(InputType type, int* outCount) {
         }
 
         free(arr);
+        arr = NULL;
         printf("Попробуйте снова.\n");
     }
 }
@@ -186,14 +194,18 @@ void task2(int autogen) {
         if (!n || !d) {
             printf("Ошибка: не удалось получить входные данные.\n");
             free(n);
+            n = NULL;
             free(d);
+            d = NULL;
             return;
         }
 
         if (lenN != lenD) {
             printf("Ошибка: количество элементов n (%d) и d (%d) должно совпадать.\n", lenN, lenD);
             free(n);
+            n = NULL;
             free(d);
+            d = NULL;
             return;
         }
     } else {
@@ -204,7 +216,9 @@ void task2(int autogen) {
         if (!n || !d) {
             printf("Ошибка выделения памяти.\n");
             free(n);
+            n = NULL;
             free(d);
+            d = NULL;
             return;
         }
 
@@ -237,7 +251,9 @@ void task2(int autogen) {
     }
 
     free(n);
+    n = NULL;
     free(d);
+    d = NULL;
 }
 
 void task3(int autogen) {
@@ -249,21 +265,33 @@ void task3(int autogen) {
     if (!autogen) {
         printf("Введите матрицу G (%dx%d):\n", N, M);
         for (int i = 0; i < N; i++) {
-            int count;
-            double* row;
+            int count = 0;
+            double* row = NULL;
+
             while (1) {
                 printf("Строка %d: ", i + 1);
                 row = (double*)inputArray(INPUT_DOUBLE, &count);
+
                 if (row == NULL) {
-                    printf("Ввод прерван или произошла ошибка. Возврат в меню.\n");
+                    printf("Ввод прерван. Возврат в меню.\n");
                     return;
                 }
-                if (count == M) break;
-                printf("Ошибка: нужно ввести ровно %d чисел. Попробуйте снова.\n", M);
-                free(row);
+
+                if (count != M) {
+                    printf("Ошибка: нужно ввести ровно %d чисел. Попробуйте снова.\n", M);
+                    free(row);
+                    row = NULL;
+                    continue;
+                }
+
+                break;
             }
-            for (int j = 0; j < M; j++) G[i][j] = row[j];
+
+            for (int j = 0; j < M; j++)
+                G[i][j] = row[j];
+
             free(row);
+            row = NULL;
         }
     } else {
         printf("Автогенерация матрицы для task3:\n");
@@ -278,7 +306,8 @@ void task3(int autogen) {
 
     printf("\nНачальная матрица G:\n");
     for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) printf("%8.2f ", G[i][j]);
+        for (int j = 0; j < M; j++)
+            printf("%8.2f ", G[i][j]);
         printf("\n");
     }
 
@@ -298,22 +327,22 @@ void task3(int autogen) {
             }
         }
 
-        if (hasZero)
-            a[i] = (count > 0) ? prod : 0;
-        else
-            a[i] = 0;
+        a[i] = hasZero ? (count > 0 ? prod : 0) : 0;
     }
 
     printf("\nПреобразованная матрица G:\n");
     for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) printf("%8.2f ", G[i][j]);
+        for (int j = 0; j < M; j++)
+            printf("%8.2f ", G[i][j]);
         printf("\n");
     }
 
     printf("\nВектор a:\n");
-    for (int i = 0; i < N; i++) printf("%8.2f ", a[i]);
+    for (int i = 0; i < N; i++)
+        printf("%8.2f ", a[i]);
     printf("\n");
 }
+
 
 void test(void) {
     printf("\n=== Автопроверка всех задач ===\n");
