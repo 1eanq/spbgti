@@ -415,5 +415,9 @@ int main() {
 
     run();
 
+    printf("\n");
+    printf("----------Выход из программы----------");
+    printf("\n");
+
     return EXIT_SUCCESS;
 }
