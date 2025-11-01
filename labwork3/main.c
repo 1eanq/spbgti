@@ -196,6 +196,12 @@ void* inputArray(InputType type, int* outCount) {
     printf("Название: main.c\nЗадание: Контрольная работа №3 вар. 7\nАвтор: И. Д. Горинов, СПбГТИ (ТУ), 2025\n");
 }
 
+void shutdown(void) {
+    printf("\n");
+    printf("----------Выход из программы----------");
+    printf("\n");
+}
+
 void freeMatrix(double ***matrix, int N) {
     if (matrix == NULL || *matrix == NULL)
         return;
@@ -490,9 +496,7 @@ int main() {
 
     run();
 
-    printf("\n");
-    printf("----------Выход из программы----------");
-    printf("\n");
+    shutdown();
 
     return EXIT_SUCCESS;
 }

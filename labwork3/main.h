@@ -140,4 +140,6 @@ void task3(bool test);
  */
 void run(void);
 
+void shutdown(void);
+
 #endif // MAIN_H
