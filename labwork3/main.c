@@ -193,7 +193,7 @@ void* inputArray(InputType type, int* outCount) {
 
     srand((unsigned)time(NULL));
 
-    printf("Название: main.c\nЗадание: Контрольная работа №2 вар. 7\nАвтор: И. Д. Горинов, СПбГТИ (ТУ), 2025\n");
+    printf("Название: main.c\nЗадание: Контрольная работа №3 вар. 7\nАвтор: И. Д. Горинов, СПбГТИ (ТУ), 2025\n");
 }
 
 void freeMatrix(double ***matrix, int N) {
