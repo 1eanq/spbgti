@@ -1,7 +1,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <stdio.h>
 #include <stdbool.h>
 
 /**
@@ -19,7 +18,10 @@ typedef enum {
     MENU_EXIT = 0,
     MENU_FIRST_TASK = 1,
     MENU_SECOND_TASK = 2,
-    MENU_THIRD_TASK = 3
+    MENU_THIRD_TASK = 3,
+    MENU_TEST_FIRST_TASK = 4,
+    MENU_TEST_SECOND_TASK = 5,
+    MENU_TEST_THIRD_TASK = 6
 } Menu;
 
 /**
@@ -110,12 +112,12 @@ void cyclicShift(double *arr, int size, int k, bool direction);
 /**
  * @brief Task 1 function.
  */
-void task1(void);
+void task1(bool test);
 
 /**
  * @brief Task 2 function.
  */
-void task2(void);
+void task2(bool test);
 
 /**
  * @brief Filters elements of an integer array according to a predicate.
@@ -131,7 +133,7 @@ int filter(const int *src, int size, Predicate pred, int *dst);
 /**
  * @brief Task 3 function.
  */
-void task3(void);
+void task3(bool test);
 
 /**
  * @brief Main program loop (menu).

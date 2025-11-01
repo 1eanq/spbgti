@@ -16,9 +16,9 @@ void showMenu() {
     printf("1. Задача 1\n");
     printf("2. Задача 2\n");
     printf("3. Задача 3\n");
-    //printf("4. Тест\n");
-    //printf("5. Тест 2 задачи\n");
-    //printf("6. Тест 3 задачи\n");
+    printf("4. Тест 1 задачи\n");
+    printf("5. Тест 2 задачи\n");
+    printf("6. Тест 3 задачи\n");
     printf("0. Выход\n");
     printf("Выберите опцию: ");
 }
@@ -239,7 +239,7 @@ void inputMatrix(double ***matrix, int N, int M) {
 void printMatrix(double **matrix, int N, int M) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
-            printf("%8.3lf ", matrix[i][j]);
+            printf("%8.2lf ", matrix[i][j]);
         }
         printf("\n");
     }
@@ -252,7 +252,7 @@ void printArray(void *arr, int size, InputType type) {
         if (type == INT)
             printf("%d ", ((int*)arr)[i]);
         else if (type == DOUBLE)
-            printf("%8.3lf ", ((double*)arr)[i]);
+            printf("%8.2lf ", ((double*)arr)[i]);
     }
     printf("\n");
 }
@@ -276,7 +276,38 @@ void cyclicShift(double *arr, int size, int k, bool direction) {
         swap(&arr[i], &arr[j]);
 }
 
-void task1(void) {
+void task1(bool test) {
+    if (test) {
+        int m = rand() % 7 + 3;
+        double *arr = calloc(m, sizeof(double));
+
+        for (int i = 0; i < m; i++) {
+            arr[i] = (double)((rand() % 1000 - 500) / 100.0);
+        }
+
+        double **matrix = (double **)calloc(m, sizeof(double *));
+        for (int i = 0; i < m; i++) {
+            matrix[i] = (double *)malloc(m * sizeof(double));
+            if (!matrix[i]) {
+                printf("Ошибка выделения памяти для строки %d.\n", i);
+                freeMatrix(&matrix, i);
+                free(arr);
+                return;
+            }
+
+            for (int j = 0; j < m; j++)
+                matrix[i][j] = arr[j];
+
+            cyclicShift(matrix[i], m, i, false);
+        }
+
+        printMatrix(matrix, m, m);
+
+        freeMatrix(&matrix, m);
+        free(arr);
+        return;
+    }
+
     printf("Введите количество элементов.\n");
     int m = (int)inputNumber(INT);
 
@@ -317,30 +348,50 @@ void task1(void) {
     freeMatrix(&matrix, m);
 }
 
-void task2(void) {
-    printf("Введите %d целых чисел через пробел: ", LENGTH);
+void task2(bool test) {
     int *arr = NULL;
 
-    bool incorrect = true;
-    while (incorrect) {
-        int outcount = 0;
-        arr = (int *)inputArray(INT, &outcount);
-        if (arr == NULL) {
-            free(arr);
+    if (test) {
+        arr = (int *)calloc(LENGTH, sizeof(int));
+        if (!arr) {
+            printf("Ошибка выделения памяти.\n");
             exit(1);
         }
-        if (outcount != LENGTH) {
-            printf("Неверная длинна строки! %d != %d", outcount, LENGTH);
-            free(arr);
-            continue;
+        for (int i = 0; i < LENGTH; i++) {
+            arr[i] = rand() % 19 - 9;
         }
-        incorrect = false;
-    }
-    for (int i = 1; i <= LENGTH; i += 2) {
-        arr[i] |= (1 << (i - 1));
+
+        printf("Начальный массив\n");
+        printArray(arr, LENGTH, INT);
+    } else {
+        printf("Введите %d целых чисел через пробел: ", LENGTH);
+
+        bool incorrect = true;
+        while (incorrect) {
+            int outcount = 0;
+            arr = (int *)inputArray(INT, &outcount);
+            if (arr == NULL) {
+                free(arr);
+                exit(1);
+            }
+            if (outcount != LENGTH) {
+                printf("Неверная длина строки! %d != %d\n", outcount, LENGTH);
+                free(arr);
+                continue;
+            }
+            incorrect = false;
+        }
     }
 
+    for (int i = 0; i < LENGTH; i += 2) {
+        arr[i] |= (1 << (i));
+    }
+
+    printf("Полученный массив\n");
     printArray(arr, LENGTH, INT);
+
+    free(arr);
+    arr = NULL;
 }
 
 bool isEven(int n) {
@@ -359,26 +410,47 @@ int filter(const int *src, int size, Predicate pred, int *dst) {
     return count;
 }
 
-void task3(void) {
+void task3(bool test) {
     int *arr = NULL;
     int outcount = 0;
 
-    bool incorrect = true;
-    while (incorrect) {
-        arr = (int *)inputArray(INT, &outcount);
-        if (arr == NULL) {
-            free(arr);
+    if (test) {
+        outcount = rand() % 6 + 5;
+        arr = (int *)calloc(outcount, sizeof(int));
+        if (!arr) {
+            printf("Ошибка выделения памяти.\n");
             exit(1);
         }
-        incorrect = false;
+        for (int i = 0; i < outcount; i++) {
+            arr[i] = rand() % 19 - 9;
+        }
+        printf("Начальный массив\n");
+        printArray(arr, outcount, INT);
+    } else {
+        bool incorrect = true;
+        while (incorrect) {
+            arr = (int *)inputArray(INT, &outcount);
+            if (arr == NULL) {
+                free(arr);
+                exit(1);
+            }
+            incorrect = false;
+        }
     }
 
-    int *dst = calloc(outcount, sizeof(int));
+    int *dst = (int *)calloc(outcount, sizeof(int));
+    if (!dst) {
+        printf("Ошибка выделения памяти.\n");
+        free(arr);
+        exit(1);
+    }
 
     int newSize = filter(arr, outcount, isEven, dst);
 
+    printf("Полученный массив\n");
     printArray(dst, newSize, INT);
 
+    free(arr);
     free(dst);
 }
 
@@ -401,9 +473,12 @@ void run(void) {
 
         switch (menu) {
             case MENU_EXIT: running = false; break;
-            case MENU_FIRST_TASK: task1(); break;
-            case MENU_SECOND_TASK: task2(); break;
-            case MENU_THIRD_TASK: task3(); break;
+            case MENU_FIRST_TASK: task1(false); break;
+            case MENU_SECOND_TASK: task2(false); break;
+            case MENU_THIRD_TASK: task3(false); break;
+            case MENU_TEST_FIRST_TASK: task1(true); break;
+            case MENU_TEST_SECOND_TASK: task2(true); break;
+            case MENU_TEST_THIRD_TASK: task3(true); break;
             default: printf("Неверный выбор! Попробуйте снова.\n");
 
         }
