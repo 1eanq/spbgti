@@ -10,4 +10,7 @@ add_executable(labwork1 labwork1/main.c)
 add_executable(labwork2 labwork2/main.c)
 
 # labwork3
-#add_executable(labwork3 labwork3/main.c)
+add_executable(labwork3
+        labwork3/main.c
+        labwork3/main.h
+)
